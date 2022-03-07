@@ -5,6 +5,8 @@ import time
 import os
 import random
 
+pygame.font.init() #inits the font
+
 # window dimensions
 WIN_WIDTH = 500
 WIN_HEIGHT = 800
@@ -25,6 +27,10 @@ PIPE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "pipe
 BASE_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "base.png")))
 #background image
 BG_IMG = pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bg.png")))
+
+
+STAT_FONT = pygame.font.SysFont("comicsans", 50) #font for score
+
 
 class Bird:
     #"constants" of the class
@@ -103,7 +109,7 @@ class Bird:
 
 class Pipe:
     GAP = 200
-    VEL = 5
+    VEL = 3
 
     def __init__(self, x):
         self.x = x
@@ -152,7 +158,7 @@ class Pipe:
 
 
 class Base:
-    VEL = 5
+    VEL = 3
     WIDTH = BASE_IMG.get_width()
     IMG = BASE_IMG
     
@@ -177,15 +183,28 @@ class Base:
         win.blit(self.IMG, (self.x2, self.y))
 
 
-def draw_window(win, bird): #draws the game window
+def draw_window(win, bird, pipes, base, score): #draws the game window
     win.blit(BG_IMG, (0,0)) #draws backgroung
+
+    for pipe in pipes: #draws all the pipes
+        pipe.draw(win)
+    base.draw(win) #draws the floor
     bird.draw(win) #draw the bird
+    
+    #draws the score
+    text = STAT_FONT.render("Score: " + str(score), 1, (255,255,255))
+    win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+
     pygame.display.update() #refresh the display
 
 def main(): #runs the main loop of the game
-    bird = Bird(200, 200)
+    bird = Bird(230, 350)
+    base = Base(730)
+    pipes = [Pipe(700)]
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
     isRunning = True
+    score = 0
+    add_pipe = False
     
     clock = pygame.time.Clock() #sets the frame rate
     
@@ -195,9 +214,37 @@ def main(): #runs the main loop of the game
             if event.type == pygame.QUIT:
                 isRunning = False
         
-        bird.move()
-        draw_window(win, bird)
-    
+        # bird.move()
+        base.move()
+
+        rem = [] #list of pipes to be removed of the actual list
+        
+        for pipe in pipes:
+            if pipe.collide(bird): #checks collision
+                pass
+            
+            if pipe.x +pipe.PIPE_TOP.get_width() < 0: #checks if the pipe is out of the screen
+                rem.append(pipe) #pipe to be removed
+            
+            if not pipe.passed and pipe.x < bird.x: #tells the bird has passed the pipe
+                pipe.passed = True
+                add_pipe = True
+
+            pipe.move()
+
+        if add_pipe: #adds a new pipe to the pipe list
+            score += 1
+            pipes.append(Pipe(600))
+            add_pipe = False
+
+        for r in rem: #removes the passed pipes
+            pipes.remove(r)
+        
+        draw_window(win, bird, pipes, base, score)
+
+        if bird.y + bird.img.get_height() >= 730: #hit the floor
+            pass
+
     #quitting pygame by clicking on the red X
     pygame.quit()
     quit()
