@@ -98,6 +98,39 @@ class Bird:
     def get_mask(self):
         return pygame.mask.from_surface(self.img)
 
+
+
+class Pipe:
+    GAP = 200
+    VEL = 5
+
+    def __init__(self, x):
+        self.x = x
+        self.height = 0
+
+        self.top = 0
+        self.bottom = 0
+        self.PIPE_TOP = pygame.transform.flip(PIPE_IMG, False, True) #flips the image to get the pipe on the top
+        self.PIPE_BOTTOM = PIPE_IMG
+
+        self.passed = False
+        self.set_height()
+
+    def set_height(self):
+        self.height = random.randrange(50,450) #gets a random number to set height
+        self.top = self.height - self.PIPE_TOP.get_height() #coordinate of the top pipe to be drawn
+        self.bottom = self.height + self.GAP
+
+    def move(self):
+        self.x -= self.VEL #moves the pipe to the left
+    
+    def draw(self, win):
+        win.blit(self.PIPE_TOP, (self.x, self.top))
+        win.blit(self.PIPE_BOTTOM, (self.x, self.bottom))
+
+
+
+
 def draw_window(win, bird): #draws the game window
     win.blit(BG_IMG, (0,0)) #draws backgroung
     bird.draw(win) #draw the bird
