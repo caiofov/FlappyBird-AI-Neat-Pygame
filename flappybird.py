@@ -197,8 +197,19 @@ def draw_window(win, bird, pipes, base, score): #draws the game window
 
     pygame.display.update() #refresh the display
 
-def main(): #runs the main loop of the game
-    bird = Bird(230, 350)
+def main(genomes, config): #runs the main loop of the game
+    nets = []
+    ge = []
+    birds = []
+    
+    for g in genomes:
+        net = neat.nn.FeedForwardNetwork(g, config) #setting up a neural network
+        
+        nets.append(net)
+        birds.append(Bird(230,350)) #add a new bird
+        g.fitness = 0
+        ge.append(g) #add a genome at the same position of that bird object, so we can keep track of its fitness
+
     base = Base(730)
     pipes = [Pipe(700)]
     win = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -220,34 +231,67 @@ def main(): #runs the main loop of the game
         rem = [] #list of pipes to be removed of the actual list
         
         for pipe in pipes:
-            if pipe.collide(bird): #checks collision
-                pass
-            
+            for x, bird in enumerate(birds):
+                if pipe.collide(bird): #checks collision
+                    ge[x].fitness -= 1 #everytime a bird hits a pipe, it loses a fitness 
+                    
+                    birds.pop(x) #removes dead bird
+                    nets.pop(x)
+                    ge.pop(x)
+
+                if not pipe.passed and pipe.x < bird.x: #tells the bird has passed the pipe
+                    pipe.passed = True
+                    add_pipe = True
+
             if pipe.x +pipe.PIPE_TOP.get_width() < 0: #checks if the pipe is out of the screen
                 rem.append(pipe) #pipe to be removed
             
-            if not pipe.passed and pipe.x < bird.x: #tells the bird has passed the pipe
-                pipe.passed = True
-                add_pipe = True
-
             pipe.move()
 
         if add_pipe: #adds a new pipe to the pipe list
             score += 1
+            for g in ge:
+                g.fitness += 5 #increasing fitnees of the birds that got through the pipe
             pipes.append(Pipe(600))
             add_pipe = False
 
         for r in rem: #removes the passed pipes
             pipes.remove(r)
         
+        
+        for x, bird in enumerate(birds):
+            if bird.y + bird.img.get_height() >= 730: #hits the floor
+                birds.pop(x) #removes dead bird
+                nets.pop(x)
+                ge.pop(x)
+        
         draw_window(win, bird, pipes, base, score)
-
-        if bird.y + bird.img.get_height() >= 730: #hit the floor
-            pass
-
+    
+    
     #quitting pygame by clicking on the red X
     pygame.quit()
     quit()
 
 
 main()
+
+def run(config_path):
+    config = neat.config.Config(neat.DefaultGenome,
+                                neat.DefaultReproduction, 
+                                net.DefaultSpeciesSet, 
+                                neat.DefaultStagnation, 
+                                config_path) #setting properties we have defined on config file
+    p = neat.Population(config) #creating a population
+
+    #gives stats on prompt
+    p.add_reporter(neat.StdOutReporter(True)) 
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stat)
+
+    winner = p.run(main,50) #50 - number of generations to run | function - fitness function
+    #passes the main function 50 times
+
+if __name__ == "__main___":
+    local_dir = os.path.dirname(__file__) #returns the directory we're currently in
+    config_path = os.path.join(local_dir, "config.txt") #path to neat config file
+    run(config_path)
