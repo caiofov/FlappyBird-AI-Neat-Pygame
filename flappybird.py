@@ -11,6 +11,7 @@ pygame.font.init() #inits the font
 WIN_WIDTH = 500
 WIN_HEIGHT = 800
 
+GEN  = 0
 #bird frames
 BIRD_IMGS = [
     pygame.transform.scale2x(pygame.image.load(os.path.join("imgs", "bird1.png"))),
@@ -183,7 +184,7 @@ class Base:
         win.blit(self.IMG, (self.x2, self.y))
 
 
-def draw_window(win, birds, pipes, base, score): #draws the game window
+def draw_window(win, birds, pipes, base, score, gen): #draws the game window
     win.blit(BG_IMG, (0,0)) #draws backgroung
 
     for pipe in pipes: #draws all the pipes
@@ -195,12 +196,22 @@ def draw_window(win, birds, pipes, base, score): #draws the game window
         bird.draw(win) #draw the bird
     
     #draws the score
-    text = STAT_FONT.render("Score: " + str(score), 1, (255,255,255))
-    win.blit(text, (WIN_WIDTH - 10 - text.get_width(), 10))
+    text1 = STAT_FONT.render("Score: " + str(score), 1, (255,255,255))
+    win.blit(text1, (WIN_WIDTH - 10 - text1.get_width(), 10))
+
+    #draw the generation
+    text2 = STAT_FONT.render("Gen: " + str(gen), 1, (255,255,255))
+    win.blit(text2, (10, 10))
+
+    text3 = STAT_FONT.render("Birds: " + str(len(birds)), 1, (255,255,255))
+    win.blit(text3, (10, 60))
 
     pygame.display.update() #refresh the display
 
 def main(genomes, config): #runs the main loop of the game
+    global GEN
+    GEN += 1
+
     nets = []
     ge = []
     birds = []
@@ -290,7 +301,7 @@ def main(genomes, config): #runs the main loop of the game
                 ge.pop(x)
         
         base.move()
-        draw_window(win, birds, pipes, base, score)
+        draw_window(win, birds, pipes, base, score, GEN)
     
     
     

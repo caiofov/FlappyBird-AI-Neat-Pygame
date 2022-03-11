@@ -7,7 +7,7 @@ fitness_criterion     = max
 fitness_threshold     = 100
 
 #population size
-pop_size              = 20 
+pop_size              = 30
 
 reset_on_extinction   = False
 
