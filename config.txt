@@ -1,28 +1,50 @@
 
 [NEAT]
-fitness_criterion     = max #function to determinate the best birds
-fitness_threshold     = 100 #what fitnesst level we want to get
-pop_size              = 100 #population size
+#function to determinate the best birds
+fitness_criterion     = max 
+
+#what fitnesst level we want to get
+fitness_threshold     = 100
+
+#population size
+pop_size              = 20 
+
 reset_on_extinction   = False
+
 
 [DefaultGenome]
 # node activation options
-activation_default      = tanh #activation function
-activation_mutate_rate  = 0.0  #random activation function
+
+#activation function
+activation_default      = tanh 
+
+#random activation function
+activation_mutate_rate  = 0.0  
+
 activation_options      = tanh 
+
 
 # node aggregation options
 aggregation_default     = sum
 aggregation_mutate_rate = 0.0
 aggregation_options     = sum
 
+
 # node bias options (initial conections and how likely they are to change)
 bias_init_mean          = 0.0
 bias_init_stdev         = 1.0
-bias_max_value          = 30.0 #max value for a bias
-bias_min_value          = -30.0 #min value for a bias
+
+#max value for a bias
+bias_max_value          = 30.0 
+
+#min value for a bias
+bias_min_value          = -30.0 
+
 bias_mutate_power       = 0.5 
-bias_mutate_rate        = 0.7 #how likely the bias values are likely to change
+
+#how likely the bias values are likely to change
+bias_mutate_rate        = 0.7 
+
 bias_replace_rate       = 0.1
 
 # genome compatibility options
@@ -34,11 +56,16 @@ conn_add_prob           = 0.5
 conn_delete_prob        = 0.5
 
 # connection enable options
-enabled_default         = True #we can have connections "turned off"
-enabled_mutate_rate     = 0.01 #chance to deactivate a connection
+
+#we can have connections "turned off"
+enabled_default         = True 
+
+#chance to deactivate a connection
+enabled_mutate_rate     = 0.01 
 
 feed_forward            = True
-initial_connection      = full #we will have fully connected layers to start
+#we will have fully connected layers to start
+initial_connection      = full 
 
 # node add/remove rates -> chance of adding or removing nodes
 node_add_prob           = 0.2
@@ -46,8 +73,10 @@ node_delete_prob        = 0.2
 
 # network parameters
 num_hidden              = 0
-num_inputs              = 3 #bird height, top pipe height and bottom pipe height
-num_outputs             = 1 #jump or not
+#bird height, top pipe height and bottom pipe height
+num_inputs              = 3 
+#jump or not
+num_outputs             = 1 
 
 # node response options
 response_init_mean      = 1.0
@@ -72,7 +101,8 @@ compatibility_threshold = 3.0
 
 [DefaultStagnation]
 species_fitness_func = max
-max_stagnation       = 20 #how many generations we go without increasing the fitness
+#how many generations we go without increasing the fitness
+max_stagnation       = 20 
 species_elitism      = 2
 
 [DefaultReproduction]
