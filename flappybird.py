@@ -129,8 +129,9 @@ class Pipe:
         self.top = self.height - self.PIPE_TOP.get_height() #coordinate of the top pipe to be drawn
         self.bottom = self.height + self.GAP
 
-    def move(self):
-        self.x -= self.VEL #moves the pipe to the left
+    def move(self, vel = None):
+        if vel is None: vel = self.VEL
+        self.x -= vel #moves the pipe to the left
     
     def draw(self, win):
         win.blit(self.PIPE_TOP, (self.x, self.top))
@@ -168,9 +169,10 @@ class Base:
         self.x1 = 0
         self.x2 = self.WIDTH
 
-    def move(self):
-        self.x1 -= self.VEL
-        self.x2 -= self.VEL
+    def move(self, vel = None):
+        if vel is None: vel = self.VEL
+        self.x1 -= vel
+        self.x2 -= vel
 
         #when an image is completely out of the screen, we must put this image right before the other one
         if self.x1 + self.WIDTH < 0: 
@@ -231,7 +233,8 @@ def main(genomes, config): #runs the main loop of the game
     score = 0
     
     clock = pygame.time.Clock() #sets the frame rate
-    
+    game_speed = 5
+
     while isRunning:
         clock.tick(30)
         for event in pygame.event.get():
@@ -285,6 +288,8 @@ def main(genomes, config): #runs the main loop of the game
 
         if add_pipe: #adds a new pipe to the pipe list
             score += 1
+            game_speed += 1
+            game_speed = min(game_speed, 12)
             for g in ge:
                 g.fitness += 5 #increasing fitnees of the birds that got through the pipe
             pipes.append(Pipe(600))
